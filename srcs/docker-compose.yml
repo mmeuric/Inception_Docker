@@ -37,8 +37,6 @@ services:
       # Ce service attend que la base de données soit opérationnelle
       mariadb:
         condition: service_healthy
-      redis_commander:
-        condition: service_started
     build:
       context: ./requirements/wordpress
       args:
@@ -79,7 +77,6 @@ services:
       - .env
     volumes:
       - wordpress_volume:/var/www/html
-      - static_website_volume:/var/www/static_website
     networks:
       - inception_network
     restart: on-failure
@@ -128,64 +125,53 @@ services:
     networks:
       - inception_network
     restart: on-failure
-
+    
   static_website:
     container_name: static_website
-    build:
-      context: ./requirements/bonus/3_static_website
-      args:
-        DEBIAN_VERSION: ${DEBIAN_VERSION}
-    image: static_website
-    env_file:
-      - .env
-    volumes:
-      - static_website_volume:/var/www/static_website
-    restart: always
+    image: static-site:inception
+    build: ./requirements/bonus/3_static_website
+    restart: unless-stopped
+    ports:
+      - "8081:80"
     networks:
       - inception_network
+    volumes:
+      - static_html:/var/www/html
 
   adminer:
     container_name: adminer
-    depends_on:
-      mariadb:
-        condition: service_healthy
-    build:
-      context: ./requirements/bonus/4_adminer
-      args:
-        DEBIAN_VERSION: ${DEBIAN_VERSION}
-    image: adminer
+    image: adminer:inception
     env_file:
-      - .env
-    ports:
-      - 8090:8090 # Interface web d'Adminer
+        - .env
+    build: 
+        context: ./requirements/bonus/4_adminer
+    restart: unless-stopped
+    networks:
+        - inception_network
+
     volumes:
-      - mariadb_volume:/var/lib/mysql
+        - adminer_data:/var/www/adminer
+    ports:
+        - "8090:80"
+
+  cadvisor:
+    container_name: cadvisor
+    image: cadvisor:inception
+    init: true
+    build:
+      context: ./requirements/bonus/5_cadvisor
+      dockerfile: Dockerfile
     networks:
       - inception_network
-    restart: on-failure
-
-  redis_commander:
-    container_name: redis_commander
-    depends_on:
-      redis:
-        condition: service_healthy
-    build:
-      context: ./requirements/bonus/5_redis_commander
-      args:
-        DEBIAN_VERSION: ${DEBIAN_VERSION}
-    image: redis_commander
-    env_file:
-      - .env
     ports:
-      - 8081:8081 # Interface web pour Redis
-    environment:
-      - REDIS_HOSTS=test:redis:6379
+      - "8080:8080"
     volumes:
-      - wordpress_volume:/var/www/html
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
     restart: always
-    networks:
-      - inception_network
-
+    
 ################################################################################
 ################################ VOLUMES #######################################
 ################################################################################
@@ -207,13 +193,18 @@ volumes:
       device: '/home/${USER}/data/wordpress'  
       o: bind
   
-  static_website_volume:
+  static_html:
     driver: local
-    name: static_website_volume
     driver_opts:
-      type: none
-      device: '/home/${USER}/data/static_website_volume'  
-      o: bind
+      type: "none"
+      o: "bind"
+      device: "/home/${USER}/data/static_html"
+  adminer_data:
+    driver: local
+    driver_opts:
+        type: none
+        o: bind
+        device: ${HOME}/data/adminer
 
 ################################################################################
 ################################ RESEAU ########################################

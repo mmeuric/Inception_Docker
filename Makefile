@@ -6,7 +6,7 @@
 #    By: mmeuric <mmeuric@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/12 23:19:09 by mmeuric           #+#    #+#              #
-#    Updated: 2025/09/22 19:39:01 by mmeuric          ###   ########.fr        #
+#    Updated: 2025/10/01 21:34:02 by mmeuric          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -67,14 +67,17 @@ volumes:
 	@echo "\n\033[1;33m📦  Création des volumes...\033[0m\n"
 	@mkdir -p $(DATA_DIR)/mariadb
 	@mkdir -p $(DATA_DIR)/wordpress
-	@mkdir -p $(DATA_DIR)/static_website_volume
+	@mkdir -p $(DATA_DIR)/static_html
+	@mkdir -p $(DATA_DIR)/adminer
 	@echo "\033[1;32m✅  Volumes créés !\033[0m\n"
-
+	
 clear_volumes:
 	@echo "\n\033[1;33m🗑️  Suppression des volumes...\033[0m\n"
 	@sudo rm -rf $(DATA_DIR)/mariadb
 	@sudo rm -rf $(DATA_DIR)/wordpress
-	@sudo rm -rf $(DATA_DIR)/static_website_volume
+	@sudo rm -rf $(DATA_DIR)/static_html
+	@sudo rm -rf $(DATA_DIR)/adminer
 	@echo "\033[1;32m✅  Volumes supprimés !\033[0m\n"
+
 
 .PHONY: all up down du stop start restart re prod clean volumes clear_volumes
