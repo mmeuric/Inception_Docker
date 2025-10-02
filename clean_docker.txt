@@ -1,0 +1,15 @@
+# Stoppe tous les conteneurs
+docker stop $(docker ps -qa)
+
+# Supprime tous les conteneurs
+docker rm $(docker ps -qa)
+
+# Supprime toutes les images
+docker rmi -f $(docker images -qa)
+
+# Supprime tous les volumes
+docker volume rm $(docker volume ls -q)
+
+# Supprime tous les réseaux (ignore les erreurs pour le réseau par défaut)
+docker network rm $(docker network ls -q) 2>/dev/null
+
