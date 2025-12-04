@@ -15,11 +15,11 @@ Every service is built **from scratch** (Alpine/Debian) using your own Dockerfil
 
 ### 📸 Screenshot
 
-![Preview](./screenshot.png)
+![Preview](./imgs/screenshot.png)
 
 ---
 
-![Preview](./screenshot2.png)
+![Preview](./imgs/screenshot2.png)
 
 ---
 
@@ -115,3 +115,8 @@ This project strengthened my skills in:
 * Debugging multi-service infrastructures
 * Extending systems with optional services (Redis, FTP, Adminer, cAdvisor…)
 
+---
+
+## My final grade :
+
+![](imgs/125_percent.png)
